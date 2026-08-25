@@ -1,0 +1,57 @@
+{% extends "blog/base.html"%}
+{% block content %}
+
+    <article class="media content-section">
+     <img class="rounded-circle article-img" src="{{ object.author.profile.image.url }}" alt="">
+        <div class="media-body">
+            <div class="article-metadata">
+            <a class="me-2" href="{% url 'user-posts' object.author.username %}">{{ object.author }}</a>
+            <small class="text-muted">{{ object.date_posted | date:"F d, Y" }}</small>
+            <small class="text-muted">Vizualizări: {{ object.views }}</small>
+            {% if object.author == user %}
+            <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{% url 'post-update' object.id %}">Update</a>
+            <a class="btn btn-danger btn-sm mt-1 mb-1" href="{% url 'post-delete' object.id %}">Delete</a>
+            {% endif  %}
+        </div>
+            <h2 class="article-title">{{ object.title }}</h2>
+            <p class="article-content">{{ object.content }}</p>
+        </div>
+     </article>
+       
+
+ <hr class="my-4">
+
+<!-- Formular adăugare comentariu -->
+<div class="card mb-4">
+    <div class="card-body">
+        <h5>Lase un comentariu</h5>
+        <form method="POST">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="id_author" class="form-label">Nume:</label>
+                {{ form.author }}
+            </div>
+            <div class="mb-3">
+                <label for="id_body" class="form-label">Comentariu:</label>
+                {{ form.body }}
+            </div>
+            <button type="submit" class="btn btn-primary btn-sm">Adaugă comentariu</button>
+        </form>
+    </div>
+</div>
+
+<!-- Lista cu toate comentariile -->
+<h4>Comentarii ({{ object.comments.count }}):</h4>
+
+{% for comment in object.comments.all %}
+    <div class="card mb-2">
+        <div class="card-body py-2">
+            <strong>{{ comment.author }}</strong> 
+            <small class="text-muted">- {{ comment.date_posted|date:"d M Y, H:i" }}</small>
+            <p class="mb-0 mt-1">{{ comment.body }}</p>
+        </div>
+    </div>
+{% empty %}
+    <p class="text-muted">Nu există comentarii încă. Fii primul care lasă un comentariu!</p>
+{% endfor %}
+{% endblock content %}
